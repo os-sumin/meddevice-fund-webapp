@@ -3,7 +3,7 @@ import { AGENTS } from "@/lib/agents";
 import { db } from "@/lib/firebaseAdmin";
 
 export const runtime = "nodejs";
-export const maxDuration = 800;
+export const maxDuration = 300;
 
 // POST /api/orchestrate  body: { agentIds?: string[], inputs?: Record<string,string> }
 // run 문서를 만들고 각 에이전트를 비동기로 던진다. 대시보드는 Firestore 실시간 구독으로 진행상황을 본다.

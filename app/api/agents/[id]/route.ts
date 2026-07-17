@@ -5,7 +5,7 @@ import { getModel, webSearchTools } from "@/lib/ai";
 import { db } from "@/lib/firebaseAdmin";
 
 export const runtime = "nodejs";
-export const maxDuration = 800; // fluid compute 기준 Pro 최대. Hobby면 300으로.
+export const maxDuration = 300; // fluid compute 기준 Pro 최대. Hobby면 300으로.
 
 // POST /api/agents/{id}  body: { runId, input }
 // input: 리서치 에이전트는 조사범위 지시, 계산 에이전트(③)는 시뮬레이터 파라미터 JSON.
