@@ -1,0 +1,58 @@
+import { NextRequest, NextResponse } from "next/server";
+import { generateText } from "ai";
+import { getAgent, loadSkillPrompt } from "@/lib/agents";
+import { getModel, webSearchTools } from "@/lib/ai";
+import { db } from "@/lib/firebaseAdmin";
+
+export const runtime = "nodejs";
+export const maxDuration = 800; // fluid compute 기준 Pro 최대. Hobby면 300으로.
+
+// POST /api/agents/{id}  body: { runId, input }
+// input: 리서치 에이전트는 조사범위 지시, 계산 에이전트(③)는 시뮬레이터 파라미터 JSON.
+export async function POST(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const agent = getAgent(id);
+  if (!agent) return NextResponse.json({ error: "unknown agent" }, { status: 404 });
+
+  const { runId, input } = await req.json();
+  const ref = db().doc(`runs/${runId}/agents/${id}`);
+  await ref.set({ status: "running", title: agent.title, startedAt: Date.now() }, { merge: true });
+
+  try {
+    // 계산 에이전트: 모델을 부르지 않고 결정적 계산을 실행한다.
+    if (agent.kind === "compute") {
+      const { simulate } = await import("@/lib/simulator");
+      const result = simulate(input); // input = SimConfig JSON
+      await ref.set({ status: "done", result, finishedAt: Date.now() }, { merge: true });
+      return NextResponse.json({ ok: true, result });
+    }
+
+    const system = loadSkillPrompt(agent);
+    const { text } = await generateText({
+      model: getModel(id),
+      system,
+      prompt: input || "명세의 기본 조사범위로 수행하라.",
+      tools: agent.usesWebSearch ? webSearchTools(id) : undefined,
+      maxSteps: agent.usesWebSearch ? 12 : 1, // 웹서치 멀티스텝 허용
+    });
+
+    // 모델이 JSON만 반환하도록 프롬프트했으나, 안전하게 펜스 제거 후 파싱
+    const clean = text.replace(/```json|```/g, "").trim();
+    let result: unknown;
+    try {
+      result = JSON.parse(clean);
+    } catch {
+      result = { summary: text, rows: [], sources: [] }; // 파싱 실패 시 원문 보존
+    }
+
+    await ref.set({ status: "done", result, finishedAt: Date.now() }, { merge: true });
+    return NextResponse.json({ ok: true, result });
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "unknown error";
+    await ref.set({ status: "error", error: message, finishedAt: Date.now() }, { merge: true });
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
