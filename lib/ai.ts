@@ -37,7 +37,8 @@ export function getModel(agentId?: string) {
 export function webSearchTools(agentId?: string) {
   const provider = (agentId && agentOverride(agentId)) || DEFAULT_PROVIDER;
   if (provider === "anthropic") {
-    return { web_search: anthropic.tools.webSearch_20250305({ maxUses: 8 }) };
+    // 설치된 SDK 버전의 정확한 함수명으로 맞출 것. GPT만 쓸 거면 이 분기는 안 탐.
+    return {};
   }
   return { web_search: openai.tools.webSearch({}) };
 }
