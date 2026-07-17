@@ -35,8 +35,8 @@ export async function POST(
       model: getModel(id),
       system,
       prompt: input || "명세의 기본 조사범위로 수행하라.",
-      tools: agent.usesWebSearch ? webSearchTools(id) : undefined,
-      maxSteps: agent.usesWebSearch ? 12 : 1, // 웹서치 멀티스텝 허용
+      tools: undefined,
+      maxSteps: 1,
     });
 
     // 모델이 JSON만 반환하도록 프롬프트했으나, 안전하게 펜스 제거 후 파싱

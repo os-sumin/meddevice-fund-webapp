@@ -34,11 +34,6 @@ export function getModel(agentId?: string) {
 // - OpenAI: Responses API의 web_search 툴
 // - Anthropic: web_search 툴
 // 리서치 에이전트(①②)만 사용. 계산 에이전트(③)는 웹서치 불필요.
-export function webSearchTools(agentId?: string) {
-  const provider = (agentId && agentOverride(agentId)) || DEFAULT_PROVIDER;
-  if (provider === "anthropic") {
-    // 설치된 SDK 버전의 정확한 함수명으로 맞출 것. GPT만 쓸 거면 이 분기는 안 탐.
-    return {};
-  }
-  return { web_search: openai.tools.webSearch({}) };
+export function webSearchTools(_agentId?: string) {
+  return undefined;
 }
