@@ -23,11 +23,10 @@ export async function POST(
 
   try {
     // 계산 에이전트: 모델을 부르지 않고 결정적 계산을 실행한다.
-    if (agent.kind === "compute") {
-      const { simulate } = await import("@/lib/simulator");
-      const result = simulate(input); // input = SimConfig JSON
-      await ref.set({ status: "done", result, finishedAt: Date.now() }, { merge: true });
-      return NextResponse.json({ ok: true, result });
+ if (agent.kind === "compute") {
+      const { simulate, DEFAULT_SIM_CONFIG } = await import("@/lib/simulator");
+      const cfg = input && typeof input === "object" ? input : DEFAULT_SIM_CONFIG;
+      const result = simulate(cfg);
     }
 
     const system = loadSkillPrompt(agent);
