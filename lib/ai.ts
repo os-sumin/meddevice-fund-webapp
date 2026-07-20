@@ -8,7 +8,6 @@ type Provider = "openai" | "anthropic";
 
 const DEFAULT_PROVIDER = (process.env.AI_PROVIDER as Provider) || "anthropic";
 const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
-const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-4-6";
 
 // 에이전트별 오버라이드 (예: 사례조사 에이전트만 Claude로).
 // AGENT_MODELS='{"fund-benchmark":"anthropic"}' 형태로 env에 넣으면 파싱됨.
