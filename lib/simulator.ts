@@ -57,3 +57,17 @@ export function simulate(config: SimConfig) {
 
   return { summary, rows, sources: [] as string[] };
 }
+
+export const DEFAULT_SIM_CONFIG: SimConfig = {
+  base: {
+    gov_contribution: 1000,
+    years: 5,
+    annual_gov_weights: [0.3, 0.25, 0.2, 0.15, 0.1],
+    death_valley_split: { 임상: 0.4, 초기사업화: 0.6 },
+  },
+  scenarios: [
+    { name: "보수(매칭 1.5x)", private_multiple: 1.5, first_loss_pct: 0.2 },
+    { name: "기본(매칭 2.0x)", private_multiple: 2.0, first_loss_pct: 0.3 },
+    { name: "공격(매칭 3.0x)", private_multiple: 3.0, first_loss_pct: 0.4 },
+  ],
+};
