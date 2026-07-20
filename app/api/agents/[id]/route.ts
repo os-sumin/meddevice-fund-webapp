@@ -22,11 +22,14 @@ export async function POST(
   await ref.set({ status: "running", title: agent.title, startedAt: Date.now() }, { merge: true });
 
   try {
-    // 계산 에이전트: 모델을 부르지 않고 결정적 계산을 실행한다.
- if (agent.kind === "compute") {
+    // 계산 에이전트: 모델을 부르지 않고 결정적 계산을 실행한다.if (agent.kind === "compute") {
+    if (agent.kind === "compute") {
       const { simulate, DEFAULT_SIM_CONFIG } = await import("@/lib/simulator");
       const cfg = input && typeof input === "object" ? input : DEFAULT_SIM_CONFIG;
       const result = simulate(cfg);
+      await ref.set({ status: "done", result, finishedAt: Date.now() }, { merge: true });
+      return NextResponse.json({ ok: true, result });
+    }
     }
 
     const system = loadSkillPrompt(agent);
