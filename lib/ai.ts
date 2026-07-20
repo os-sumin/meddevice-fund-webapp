@@ -1,6 +1,4 @@
-// provider-agnostic 모델 선택.
-// 에이전트별로 다른 모델을 쓰고 싶으면 getModel(agentId)에 매핑을 추가하면 됨.
-// 기본은 GPT. env(AI_PROVIDER)로 전역 스위치, 또는 AGENT_MODELS로 에이전트별 오버라이드.
+// provider-agnostic 모델 선택. 기본은 Claude.
 import { openai } from "@ai-sdk/openai";
 import { anthropic } from "@ai-sdk/anthropic";
 
@@ -8,9 +6,9 @@ type Provider = "openai" | "anthropic";
 
 const DEFAULT_PROVIDER = (process.env.AI_PROVIDER as Provider) || "anthropic";
 const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
+const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4o";
 
-// 에이전트별 오버라이드 (예: 사례조사 에이전트만 Claude로).
-// AGENT_MODELS='{"fund-benchmark":"anthropic"}' 형태로 env에 넣으면 파싱됨.
+// 에이전트별 오버라이드. AGENT_MODELS='{"fund-benchmark":"openai"}' 형태.
 function agentOverride(agentId: string): Provider | undefined {
   try {
     const raw = process.env.AGENT_MODELS;
@@ -27,12 +25,4 @@ export function getModel(agentId?: string) {
   return provider === "anthropic"
     ? anthropic(ANTHROPIC_MODEL)
     : openai(OPENAI_MODEL);
-}
-
-// 서버사이드 웹서치 툴. provider마다 내장 웹서치 툴이 다르므로 여기서 흡수한다.
-// - OpenAI: Responses API의 web_search 툴
-// - Anthropic: web_search 툴
-// 리서치 에이전트(①②)만 사용. 계산 에이전트(③)는 웹서치 불필요.
-export function webSearchTools(_agentId?: string) {
-  return undefined;
 }
