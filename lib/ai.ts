@@ -6,8 +6,8 @@ import { anthropic } from "@ai-sdk/anthropic";
 
 type Provider = "openai" | "anthropic";
 
-const DEFAULT_PROVIDER = (process.env.AI_PROVIDER as Provider) || "openai";
-const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-5.4"; // 실제 사용 가능한 모델명으로 조정
+const DEFAULT_PROVIDER = (process.env.AI_PROVIDER as Provider) || "anthropic";
+const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
 const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-4-6";
 
 // 에이전트별 오버라이드 (예: 사례조사 에이전트만 Claude로).
